@@ -1,11 +1,12 @@
 #include <Servo.h>
 Servo servoMotor;
 const int PIRPin= 7;
-const int BuzzerPin = 11;
 int detectado =0;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(2,INPUT);
+  pinMode(13,OUTPUT);
   servoMotor.attach(9);
   pinMode(13, OUTPUT);
   pinMode(PIRPin, INPUT);
@@ -27,17 +28,11 @@ void cerrarcerradura()
   delay(1000);
 }
 
-void detector()
+void detector(int valor)
 {
- 
-}
-
-int incomingbyte = 0;
-void loop() {
-
- const int LEDPin =13;
-  int value = digitalRead(PIRPin);
-  if (value == HIGH)
+  
+  const int LEDPin = 13;
+  if (valor == HIGH)
   {
     digitalWrite(LEDPin, HIGH);
     delay(50);
@@ -56,23 +51,32 @@ void loop() {
     delay(500);
   }
   
-  
-  if (Serial.available() > 0) {
-    incomingbyte = Serial.read();
-    if (incomingbyte == 49)
-    {
+}
+
+int incomingbyte = 0;
+
+void loop() {
+
+  int value = digitalRead(PIRPin);
+  if (detectado == 0)
+  {
+  detector(value);
+  }
+
+  int espval = digitalRead(2);
+  Serial.println(espval);  
+ 
+  if (espval == HIGH)
+  {
+    digitalWrite(13,HIGH);
     abrircerradura();
-    delay(1000);
-    Serial.print("abriendo ");
-    Serial.println(incomingbyte, DEC);
-    }
-    else if(incomingbyte == 50)
-    {
+  }
+  else
+  {
+    digitalWrite(13,LOW);
     cerrarcerradura();
-     delay(1000);
-     Serial.print("cerrando ");
-     Serial.println(incomingbyte, DEC);
-    }
   }
-  }
+
+}
+  
 
